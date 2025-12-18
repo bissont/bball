@@ -1707,7 +1707,12 @@ Format: time,home_score,away_score"
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-gray-300 text-sm font-semibold mb-2 block">{homeTeam} Past Games</label>
+                      <label className="text-gray-300 text-sm font-semibold mb-2 block">
+                        {homeTeam} Past Games
+                        {homeTeamHistory && extractTeamName(homeTeamHistory) && extractTeamName(homeTeamHistory) !== homeTeam && (
+                          <span className="ml-2 text-xs text-yellow-400">(Detected: {extractTeamName(homeTeamHistory)})</span>
+                        )}
+                      </label>
                       <textarea
                         value={homeTeamHistory}
                         onChange={(e) => {
@@ -1715,7 +1720,7 @@ Format: time,home_score,away_score"
                           setHomeTeamHistory(value);
                           // Auto-detect team name from input
                           const detectedTeam = extractTeamName(value);
-                          if (detectedTeam && !homeTeamHistory) {
+                          if (detectedTeam && detectedTeam !== homeTeam) {
                             setHomeTeam(detectedTeam);
                           }
                         }}
