@@ -680,6 +680,41 @@ const BasketballESPNPredictor = () => {
     ? (100 - (gameData.reduce((sum, p) => sum + p.error, 0) / gameData.length / finalActual * 100)).toFixed(1)
     : 0;
 
+  // Extract team name from historical data input
+  const extractTeamName = (input) => {
+    if (!input.trim()) return null;
+    
+    const lines = input.trim().split('\n');
+    
+    // Look for team name in first few lines
+    // Patterns: "Houston Rockets Schedule", "Team Name Schedule", etc.
+    for (let i = 0; i < Math.min(5, lines.length); i++) {
+      const line = lines[i].trim();
+      
+      // Look for "Team Name Schedule" pattern
+      const scheduleMatch = line.match(/(.+?)\s+Schedule/i);
+      if (scheduleMatch) {
+        const teamName = scheduleMatch[1].trim();
+        // Clean up common prefixes/suffixes
+        return teamName.replace(/^(More\s+)?(NBA\s+)?(Teams\s+)?/i, '').trim();
+      }
+      
+      // Look for standalone team names (common NBA team patterns)
+      const teamPatterns = [
+        /^(Houston|Boston|Chicago|Cleveland|Dallas|Denver|Detroit|Golden State|Indiana|LA|Los Angeles|Memphis|Miami|Milwaukee|Minnesota|New Orleans|New York|Oklahoma City|Orlando|Philadelphia|Phoenix|Portland|Sacramento|San Antonio|Toronto|Utah|Washington|Atlanta|Brooklyn|Charlotte)\s+(Rockets|Celtics|Bulls|Cavaliers|Mavericks|Nuggets|Pistons|Warriors|Pacers|Clippers|Lakers|Grizzlies|Heat|Bucks|Timberwolves|Pelicans|Knicks|Thunder|Magic|76ers|Suns|Trail Blazers|Kings|Spurs|Raptors|Jazz|Wizards|Hawks|Nets|Hornets)/i
+      ];
+      
+      for (const pattern of teamPatterns) {
+        const match = line.match(pattern);
+        if (match) {
+          return match[0].trim();
+        }
+      }
+    }
+    
+    return null;
+  };
+
   // Parse historical game scores from ESPN schedule format
   const parseHistoricalScores = (input, isHomeTeam = true) => {
     if (!input.trim()) return [];
@@ -1212,7 +1247,15 @@ Format: time,home_score,away_score"
                   <label className="text-gray-300 text-sm font-semibold mb-2 block">{homeTeam} Past Games</label>
                   <textarea
                     value={homeTeamHistory}
-                    onChange={(e) => setHomeTeamHistory(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setHomeTeamHistory(value);
+                      // Auto-detect team name from input
+                      const detectedTeam = extractTeamName(value);
+                      if (detectedTeam && !homeTeamHistory) {
+                        setHomeTeam(detectedTeam);
+                      }
+                    }}
                     placeholder={`Paste ${homeTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
                     className="w-full h-64 p-3 bg-black/40 text-white rounded-lg border border-white/20 font-mono text-xs focus:outline-none focus:border-purple-400 resize-y"
                   />
@@ -1231,7 +1274,15 @@ Format: time,home_score,away_score"
                   <label className="text-gray-300 text-sm font-semibold mb-2 block">{awayTeam} Past Games</label>
                   <textarea
                     value={awayTeamHistory}
-                    onChange={(e) => setAwayTeamHistory(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setAwayTeamHistory(value);
+                      // Auto-detect team name from input
+                      const detectedTeam = extractTeamName(value);
+                      if (detectedTeam && !awayTeamHistory) {
+                        setAwayTeam(detectedTeam);
+                      }
+                    }}
                     placeholder={`Paste ${awayTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
                     className="w-full h-64 p-3 bg-black/40 text-white rounded-lg border border-white/20 font-mono text-xs focus:outline-none focus:border-purple-400 resize-y"
                   />
@@ -1625,7 +1676,15 @@ Format: time,home_score,away_score"
                       <label className="text-gray-300 text-sm font-semibold mb-2 block">{homeTeam} Past Games</label>
                       <textarea
                         value={homeTeamHistory}
-                        onChange={(e) => setHomeTeamHistory(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setHomeTeamHistory(value);
+                          // Auto-detect team name from input
+                          const detectedTeam = extractTeamName(value);
+                          if (detectedTeam && !homeTeamHistory) {
+                            setHomeTeam(detectedTeam);
+                          }
+                        }}
                         placeholder={`Paste ${homeTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
                         className="w-full h-64 p-3 bg-black/40 text-white rounded-lg border border-white/20 font-mono text-xs focus:outline-none focus:border-purple-400 resize-y"
                       />
@@ -1639,7 +1698,15 @@ Format: time,home_score,away_score"
                       <label className="text-gray-300 text-sm font-semibold mb-2 block">{awayTeam} Past Games</label>
                       <textarea
                         value={awayTeamHistory}
-                        onChange={(e) => setAwayTeamHistory(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setAwayTeamHistory(value);
+                          // Auto-detect team name from input
+                          const detectedTeam = extractTeamName(value);
+                          if (detectedTeam && !awayTeamHistory) {
+                            setAwayTeam(detectedTeam);
+                          }
+                        }}
                         placeholder={`Paste ${awayTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
                         className="w-full h-64 p-3 bg-black/40 text-white rounded-lg border border-white/20 font-mono text-xs focus:outline-none focus:border-purple-400 resize-y"
                       />
