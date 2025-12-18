@@ -688,20 +688,25 @@ const BasketballESPNPredictor = () => {
     
     // Look for team name in first few lines
     // Patterns: "Houston Rockets Schedule", "Team Name Schedule", etc.
-    for (let i = 0; i < Math.min(5, lines.length); i++) {
+    for (let i = 0; i < Math.min(10, lines.length); i++) {
       const line = lines[i].trim();
       
-      // Look for "Team Name Schedule" pattern
+      // Look for "Team Name Schedule" pattern (most reliable)
       const scheduleMatch = line.match(/(.+?)\s+Schedule/i);
       if (scheduleMatch) {
-        const teamName = scheduleMatch[1].trim();
+        let teamName = scheduleMatch[1].trim();
         // Clean up common prefixes/suffixes
-        return teamName.replace(/^(More\s+)?(NBA\s+)?(Teams\s+)?/i, '').trim();
+        teamName = teamName.replace(/^(More\s+)?(NBA\s+)?(Teams\s+)?/i, '').trim();
+        // Remove year patterns like "2025-26"
+        teamName = teamName.replace(/\s+\d{4}-\d{2}$/i, '').trim();
+        if (teamName) {
+          return teamName;
+        }
       }
       
-      // Look for standalone team names (common NBA team patterns)
+      // Look for standalone team names (common NBA team patterns) - match anywhere in line
       const teamPatterns = [
-        /^(Houston|Boston|Chicago|Cleveland|Dallas|Denver|Detroit|Golden State|Indiana|LA|Los Angeles|Memphis|Miami|Milwaukee|Minnesota|New Orleans|New York|Oklahoma City|Orlando|Philadelphia|Phoenix|Portland|Sacramento|San Antonio|Toronto|Utah|Washington|Atlanta|Brooklyn|Charlotte)\s+(Rockets|Celtics|Bulls|Cavaliers|Mavericks|Nuggets|Pistons|Warriors|Pacers|Clippers|Lakers|Grizzlies|Heat|Bucks|Timberwolves|Pelicans|Knicks|Thunder|Magic|76ers|Suns|Trail Blazers|Kings|Spurs|Raptors|Jazz|Wizards|Hawks|Nets|Hornets)/i
+        /(Houston|Boston|Chicago|Cleveland|Dallas|Denver|Detroit|Golden State|Indiana|LA|Los Angeles|Memphis|Miami|Milwaukee|Minnesota|New Orleans|New York|Oklahoma City|Orlando|Philadelphia|Phoenix|Portland|Sacramento|San Antonio|Toronto|Utah|Washington|Atlanta|Brooklyn|Charlotte)\s+(Rockets|Celtics|Bulls|Cavaliers|Mavericks|Nuggets|Pistons|Warriors|Pacers|Clippers|Lakers|Grizzlies|Heat|Bucks|Timberwolves|Pelicans|Knicks|Thunder|Magic|76ers|Suns|Trail Blazers|Kings|Spurs|Raptors|Jazz|Wizards|Hawks|Nets|Hornets)/i
       ];
       
       for (const pattern of teamPatterns) {
