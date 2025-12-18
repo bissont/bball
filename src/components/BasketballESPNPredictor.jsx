@@ -689,7 +689,7 @@ const BasketballESPNPredictor = () => {
       const processed = processGameData(rawData);
       setGameData(processed);
     }
-  }, [velocityWindow]);
+  }, [velocityWindow, historicalTotal]);
 
   // Auto-update team names when historical data is pasted
   useEffect(() => {
