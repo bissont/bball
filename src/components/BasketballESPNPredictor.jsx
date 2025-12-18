@@ -1252,7 +1252,7 @@ Format: time,home_score,away_score"
                       setHomeTeamHistory(value);
                       // Auto-detect team name from input
                       const detectedTeam = extractTeamName(value);
-                      if (detectedTeam && !homeTeamHistory) {
+                      if (detectedTeam) {
                         setHomeTeam(detectedTeam);
                       }
                     }}
