@@ -191,7 +191,7 @@ const BasketballESPNPredictor = () => {
     return { totalVelocity, homeVelocity, awayVelocity };
   };
 
-  const calculatePredictionAtPoint = (point, velocity) => {
+  const calculatePredictionAtPoint = (point, velocity, historicalAvg = null, gameProgress = null) => {
     const timeRemaining = TOTAL_GAME_TIME - point.timeSeconds;
     const currentTotal = point.home + point.away;
     const gameProgress = point.timeSeconds / TOTAL_GAME_TIME;
@@ -210,8 +210,7 @@ const BasketballESPNPredictor = () => {
     let predictedAway = Math.round(point.away + (weightedAwayVelocity * timeRemaining));
     
     // Incorporate historical data if available (blend with velocity-based prediction)
-    if (historicalTotal && gameProgress > 0.1) { // Only use historical data after 10% of game
-      const historicalAvg = historicalTotal.avg;
+    if (historicalAvg && gameProgress && gameProgress > 0.1) { // Only use historical data after 10% of game
       const currentProjection = currentTotal / gameProgress;
       
       // Calculate how much to weight historical data based on:
@@ -248,13 +247,11 @@ const BasketballESPNPredictor = () => {
   };
 
   const processGameData = (rawData) => {
-    // Calculate historical total once for use in predictions
-    const histTotal = historicalTotal;
-    
     return rawData.map((point, index) => {
       const velocity = calculateVelocity(rawData, index);
-      // Temporarily set historicalTotal for this calculation
-      const prediction = calculatePredictionAtPoint(point, velocity);
+      const gameProgress = point.timeSeconds / TOTAL_GAME_TIME;
+      const historicalAvg = historicalTotal ? historicalTotal.avg : null;
+      const prediction = calculatePredictionAtPoint(point, velocity, historicalAvg, gameProgress);
       const currentTotal = point.home + point.away;
       
       return {
