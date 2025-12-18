@@ -696,7 +696,6 @@ const BasketballESPNPredictor = () => {
     if (homeTeamHistory && homeTeamHistory.trim().length > 10) {
       const detectedTeam = extractTeamName(homeTeamHistory);
       if (detectedTeam && detectedTeam !== homeTeam) {
-        console.log('Detected home team:', detectedTeam, 'from:', homeTeamHistory.substring(0, 50));
         setHomeTeam(detectedTeam);
       }
     }
@@ -706,7 +705,6 @@ const BasketballESPNPredictor = () => {
     if (awayTeamHistory && awayTeamHistory.trim().length > 10) {
       const detectedTeam = extractTeamName(awayTeamHistory);
       if (detectedTeam && detectedTeam !== awayTeam) {
-        console.log('Detected away team:', detectedTeam, 'from:', awayTeamHistory.substring(0, 50));
         setAwayTeam(detectedTeam);
       }
     }
