@@ -693,22 +693,24 @@ const BasketballESPNPredictor = () => {
 
   // Auto-update team names when historical data is pasted
   useEffect(() => {
-    if (homeTeamHistory) {
+    if (homeTeamHistory && homeTeamHistory.trim().length > 10) {
       const detectedTeam = extractTeamName(homeTeamHistory);
       if (detectedTeam && detectedTeam !== homeTeam) {
+        console.log('Detected home team:', detectedTeam, 'from:', homeTeamHistory.substring(0, 50));
         setHomeTeam(detectedTeam);
       }
     }
-  }, [homeTeamHistory]);
+  }, [homeTeamHistory, homeTeam]);
 
   useEffect(() => {
-    if (awayTeamHistory) {
+    if (awayTeamHistory && awayTeamHistory.trim().length > 10) {
       const detectedTeam = extractTeamName(awayTeamHistory);
       if (detectedTeam && detectedTeam !== awayTeam) {
+        console.log('Detected away team:', detectedTeam, 'from:', awayTeamHistory.substring(0, 50));
         setAwayTeam(detectedTeam);
       }
     }
-  }, [awayTeamHistory]);
+  }, [awayTeamHistory, awayTeam]);
 
   const currentPoint = selectedTime !== null && gameData[selectedTime] ? gameData[selectedTime] : null;
   const finalActual = gameData.length > 0 ? gameData[gameData.length - 1].total : 0;
@@ -1298,10 +1300,12 @@ Format: time,home_score,away_score"
                     onChange={(e) => {
                       const value = e.target.value;
                       setHomeTeamHistory(value);
-                      // Auto-detect team name from input
-                      const detectedTeam = extractTeamName(value);
-                      if (detectedTeam && detectedTeam !== homeTeam) {
-                        setHomeTeam(detectedTeam);
+                      // Auto-detect team name from input immediately
+                      if (value.trim().length > 10) {
+                        const detectedTeam = extractTeamName(value);
+                        if (detectedTeam) {
+                          setHomeTeam(detectedTeam);
+                        }
                       }
                     }}
                     placeholder={`Paste ${homeTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
@@ -1330,10 +1334,12 @@ Format: time,home_score,away_score"
                     onChange={(e) => {
                       const value = e.target.value;
                       setAwayTeamHistory(value);
-                      // Auto-detect team name from input
-                      const detectedTeam = extractTeamName(value);
-                      if (detectedTeam && detectedTeam !== awayTeam) {
-                        setAwayTeam(detectedTeam);
+                      // Auto-detect team name from input immediately
+                      if (value.trim().length > 10) {
+                        const detectedTeam = extractTeamName(value);
+                        if (detectedTeam) {
+                          setAwayTeam(detectedTeam);
+                        }
                       }
                     }}
                     placeholder={`Paste ${awayTeam} ESPN schedule data here...\n\nExample:\nDATE\tOPPONENT\tRESULT\tW-L\t...\nWed, 10/22\t@ NY\tL119-111\t0-1\t...\nFri, 10/24\t@ BKN\tW131-124\t1-1\t...`}
