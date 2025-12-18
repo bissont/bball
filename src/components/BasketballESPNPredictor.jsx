@@ -672,6 +672,25 @@ const BasketballESPNPredictor = () => {
     }
   }, [velocityWindow]);
 
+  // Auto-update team names when historical data is pasted
+  useEffect(() => {
+    if (homeTeamHistory) {
+      const detectedTeam = extractTeamName(homeTeamHistory);
+      if (detectedTeam && detectedTeam !== homeTeam) {
+        setHomeTeam(detectedTeam);
+      }
+    }
+  }, [homeTeamHistory]);
+
+  useEffect(() => {
+    if (awayTeamHistory) {
+      const detectedTeam = extractTeamName(awayTeamHistory);
+      if (detectedTeam && detectedTeam !== awayTeam) {
+        setAwayTeam(detectedTeam);
+      }
+    }
+  }, [awayTeamHistory]);
+
   const currentPoint = selectedTime !== null && gameData[selectedTime] ? gameData[selectedTime] : null;
   const finalActual = gameData.length > 0 ? gameData[gameData.length - 1].total : 0;
 
@@ -1249,7 +1268,12 @@ Format: time,home_score,away_score"
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-gray-300 text-sm font-semibold mb-2 block">{homeTeam} Past Games</label>
+                  <label className="text-gray-300 text-sm font-semibold mb-2 block">
+                    {homeTeam} Past Games
+                    {homeTeamHistory && extractTeamName(homeTeamHistory) && extractTeamName(homeTeamHistory) !== homeTeam && (
+                      <span className="ml-2 text-xs text-yellow-400">(Detected: {extractTeamName(homeTeamHistory)})</span>
+                    )}
+                  </label>
                   <textarea
                     value={homeTeamHistory}
                     onChange={(e) => {
@@ -1257,7 +1281,7 @@ Format: time,home_score,away_score"
                       setHomeTeamHistory(value);
                       // Auto-detect team name from input
                       const detectedTeam = extractTeamName(value);
-                      if (detectedTeam) {
+                      if (detectedTeam && detectedTeam !== homeTeam) {
                         setHomeTeam(detectedTeam);
                       }
                     }}
@@ -1276,7 +1300,12 @@ Format: time,home_score,away_score"
                   )}
                 </div>
                 <div>
-                  <label className="text-gray-300 text-sm font-semibold mb-2 block">{awayTeam} Past Games</label>
+                  <label className="text-gray-300 text-sm font-semibold mb-2 block">
+                    {awayTeam} Past Games
+                    {awayTeamHistory && extractTeamName(awayTeamHistory) && extractTeamName(awayTeamHistory) !== awayTeam && (
+                      <span className="ml-2 text-xs text-yellow-400">(Detected: {extractTeamName(awayTeamHistory)})</span>
+                    )}
+                  </label>
                   <textarea
                     value={awayTeamHistory}
                     onChange={(e) => {
@@ -1284,7 +1313,7 @@ Format: time,home_score,away_score"
                       setAwayTeamHistory(value);
                       // Auto-detect team name from input
                       const detectedTeam = extractTeamName(value);
-                      if (detectedTeam) {
+                      if (detectedTeam && detectedTeam !== awayTeam) {
                         setAwayTeam(detectedTeam);
                       }
                     }}
@@ -1700,7 +1729,12 @@ Format: time,home_score,away_score"
                       )}
                     </div>
                     <div>
-                      <label className="text-gray-300 text-sm font-semibold mb-2 block">{awayTeam} Past Games</label>
+                      <label className="text-gray-300 text-sm font-semibold mb-2 block">
+                        {awayTeam} Past Games
+                        {awayTeamHistory && extractTeamName(awayTeamHistory) && extractTeamName(awayTeamHistory) !== awayTeam && (
+                          <span className="ml-2 text-xs text-yellow-400">(Detected: {extractTeamName(awayTeamHistory)})</span>
+                        )}
+                      </label>
                       <textarea
                         value={awayTeamHistory}
                         onChange={(e) => {
@@ -1708,7 +1742,7 @@ Format: time,home_score,away_score"
                           setAwayTeamHistory(value);
                           // Auto-detect team name from input
                           const detectedTeam = extractTeamName(value);
-                          if (detectedTeam) {
+                          if (detectedTeam && detectedTeam !== awayTeam) {
                             setAwayTeam(detectedTeam);
                           }
                         }}
