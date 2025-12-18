@@ -209,6 +209,24 @@ const BasketballESPNPredictor = () => {
     let predictedHome = Math.round(point.home + (weightedHomeVelocity * timeRemaining));
     let predictedAway = Math.round(point.away + (weightedAwayVelocity * timeRemaining));
     
+    // Incorporate historical data if available (blend with velocity-based prediction)
+    if (historicalTotal && gameProgress > 0.1) { // Only use historical data after 10% of game
+      const historicalAvg = historicalTotal.avg;
+      const currentProjection = currentTotal / gameProgress;
+      
+      // Calculate how much to weight historical data based on:
+      // 1. How much of the game has elapsed (more weight early in game)
+      // 2. How close current pace is to historical average
+      const paceDifference = Math.abs(currentProjection - historicalAvg) / historicalAvg;
+      const historicalWeight = Math.min(0.25, Math.max(0.05, (1 - gameProgress) * 0.3)); // 5-25% weight, more early
+      
+      // If current pace is very different from historical, reduce historical weight
+      const adjustedWeight = paceDifference > 0.2 ? historicalWeight * 0.5 : historicalWeight;
+      
+      // Blend velocity-based prediction with historical average
+      predictedTotal = Math.round(predictedTotal * (1 - adjustedWeight) + historicalAvg * adjustedWeight);
+    }
+    
     // Ensure predictions don't go below current scores
     predictedTotal = Math.max(predictedTotal, currentTotal);
     predictedHome = Math.max(predictedHome, point.home);
@@ -230,8 +248,12 @@ const BasketballESPNPredictor = () => {
   };
 
   const processGameData = (rawData) => {
+    // Calculate historical total once for use in predictions
+    const histTotal = historicalTotal;
+    
     return rawData.map((point, index) => {
       const velocity = calculateVelocity(rawData, index);
+      // Temporarily set historicalTotal for this calculation
       const prediction = calculatePredictionAtPoint(point, velocity);
       const currentTotal = point.home + point.away;
       
