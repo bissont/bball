@@ -375,6 +375,17 @@ const BasketballESPNPredictor = () => {
       }
     }
     
+    // Detect if times are in reverse order (first time > last time)
+    // This happens when ESPN shows data from end of quarter to start
+    if (parsed.length >= 2) {
+      const firstTime = parsed[0].timeSeconds;
+      const lastTime = parsed[parsed.length - 1].timeSeconds;
+      if (firstTime > lastTime) {
+        // Reverse the array to get chronological order
+        parsed.reverse();
+      }
+    }
+    
     return parsed;
   };
 
@@ -551,6 +562,17 @@ const BasketballESPNPredictor = () => {
       if (parsed.length === 0) {
         setError('No valid data found. Paste ESPN play-by-play data with TIME, PLAY, HOME_SCORE, AWAY_SCORE columns');
         return;
+      }
+
+      // Detect if times are in reverse order (first time > last time)
+      // This happens when ESPN shows data from end of quarter to start
+      if (parsed.length >= 2) {
+        const firstTime = parsed[0].timeSeconds;
+        const lastTime = parsed[parsed.length - 1].timeSeconds;
+        if (firstTime > lastTime) {
+          // Reverse the array to get chronological order
+          parsed.reverse();
+        }
       }
 
       // Sort by time and remove duplicates (keep last score for same time)
